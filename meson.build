@@ -54,4 +54,5 @@ gsl_include_dir = include_directories('.')
 
 subdir('gsl')
 subdir('sys')
+subdir('blas')
 subdir('matrix')
