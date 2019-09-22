@@ -1,6 +1,9 @@
 #mesondefine GSL_DISABLE_DEPRECATED
 #mesondefine HAVE_CONFIG_H
 #mesondefine HAVE_IEEE_COMPARISONS
+#mesondefine HAVE_IEEE_DENORMALS
+#mesondefine HAVE_EXIT_SUCCESS_AND_FAILURE
+#mesondefine HAVE_INLINE
 
 #ifdef __GNUC__
 #define DISCARD_POINTER(p) do { ; } while(p ? 0 : 0);
@@ -13,3 +16,9 @@
 #endif
 
 #define RETURN_IF_NULL(x) if (!x) { return ; }
+
+/* Use 0 and 1 for EXIT_SUCCESS and EXIT_FAILURE if we don't have them */
+#if !HAVE_EXIT_SUCCESS_AND_FAILURE
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
+#endif
