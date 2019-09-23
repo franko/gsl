@@ -228,5 +228,5 @@ gsl_header_files = [
 ]
 
 foreach header_file : gsl_header_files
-    configure_file(input: header_file, output: '@BASENAME@.h', copy: true, install: true, install_dir: 'include')
+    configure_file(input: header_file, output: '@BASENAME@.h', copy: true, install: true, install_dir: 'include/gsl')
 endforeach
