@@ -4,8 +4,9 @@ libm = dependency('m', required: false)
 
 conf = configuration_data()
 conf.set('GSL_DISABLE_DEPRECATED', 1)
-conf.set('HAVE_CONFIG_H', 1)
 conf.set('HAVE_INLINE', 1)
+
+gsl_defines = ['-DHAVE_CONFIG_H']
 
 compiler = meson.get_compiler('c')
 
@@ -53,6 +54,10 @@ configure_file(input: 'config-meson.h.in', output: 'config.h', configuration: co
 gsl_include_dir = include_directories('.')
 
 subdir('gsl')
+subdir('err')
+subdir('test')
+subdir('complex')
+subdir('cheb')
 subdir('sys')
 subdir('blas')
 subdir('matrix')
