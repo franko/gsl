@@ -1,4 +1,4 @@
-static_library('cheb', ['deriv.c', 'eval.c', 'init.c', 'integ.c'],
+gsl_libraries += static_library('cheb', ['deriv.c', 'eval.c', 'init.c', 'integ.c'],
     include_directories: gsl_include_dir,
     c_args : gsl_defines,
     dependencies: libm,

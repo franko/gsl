@@ -1,4 +1,4 @@
-static_library('err', ['error.c', 'stream.c', 'message.c', 'strerror.c'],
+gsl_libraries += static_library('err', ['error.c', 'stream.c', 'message.c', 'strerror.c'],
     include_directories: gsl_include_dir,
     c_args : gsl_defines,
     dependencies: libm,

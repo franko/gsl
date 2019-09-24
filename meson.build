@@ -53,6 +53,8 @@ configure_file(input: 'config-meson.h.in', output: 'config.h', configuration: co
 
 gsl_include_dir = include_directories('.')
 
+gsl_libraries = []
+
 subdir('gsl')
 subdir('err')
 subdir('test')
@@ -61,3 +63,11 @@ subdir('cheb')
 subdir('sys')
 subdir('blas')
 subdir('matrix')
+
+library('gsl',
+    'version.c',
+    link_with: gsl_libraries,
+    include_directories: gsl_include_dir,
+    install: true,
+    build_by_default: true,
+)

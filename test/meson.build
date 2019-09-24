@@ -1,4 +1,4 @@
-static_library('gsltest', 'results.c',
+gsl_libraries += static_library('gsltest', 'results.c',
     include_directories: gsl_include_dir,
     c_args : gsl_defines,
     dependencies: libm,
