@@ -1,0 +1,183 @@
+#mesondefine GSL_DISABLE_DEPRECATED
+#mesondefine HAVE_IEEE_COMPARISONS
+#mesondefine HAVE_IEEE_DENORMALS
+#mesondefine HAVE_EXIT_SUCCESS_AND_FAILURE
+#mesondefine HAVE_INLINE
+#mesondefine HAVE_DECL_ACOSH
+#mesondefine HAVE_DECL_ASINH
+#mesondefine HAVE_DECL_ATANH
+#mesondefine HAVE_DECL_EXPM1
+#mesondefine HAVE_DECL_FREXP
+#mesondefine HAVE_DECL_HYPOT
+#mesondefine HAVE_DECL_LDEXP
+#mesondefine HAVE_DECL_FINITE
+#mesondefine HAVE_DECL_ISFINITE
+#mesondefine HAVE_DECL_ISINF
+#mesondefine HAVE_DECL_ISNAN
+#mesondefine HAVE_DECL_LOG1P
+#mesondefine HAVE_IEEEFP_H
+#mesondefine HAVE_INTTYPES_H
+#mesondefine HAVE_DLFCN_H
+#mesondefine HAVE_STDINT_H
+#mesondefine HAVE_STDLIB_H
+#mesondefine HAVE_STRINGS_H
+#mesondefine HAVE_STRING_H
+#mesondefine HAVE_SYS_STAT_H
+#mesondefine HAVE_SYS_TYPES_H
+#mesondefine HAVE_UNISTD_H
+#mesondefine HAVE_MEMORY_H
+#mesondefine HAVE_MEMCPY
+#mesondefine HAVE_MEMMOVE
+#mesondefine HAVE_STRDUP
+#mesondefine HAVE_STRTOL
+#mesondefine HAVE_STRTOUL
+#mesondefine HAVE_VPRINTF
+#mesondefine HAVE_DECL_FPRND_T
+#mesondefine HAVE_C99_INLINE
+#mesondefine HAVE_DECL_FEENABLEEXCEPT
+#mesondefine HAVE_DECL_FESETTRAPENABLE
+#mesondefine HAVE_EXTENDED_PRECISION_REGISTERS
+#mesondefine HAVE_FPU_X86_SSE
+#mesondefine HAVE_PRINTF_LONGDOUBLE
+
+#mesondefine HAVE_GNUSPARC_IEEE_INTERFACE
+#mesondefine HAVE_GNUM68K_IEEE_INTERFACE
+#mesondefine HAVE_GNUPPC_IEEE_INTERFACE
+#mesondefine HAVE_GNUX86_IEEE_INTERFACE
+#mesondefine HAVE_SUNOS4_IEEE_INTERFACE
+#mesondefine HAVE_SOLARIS_IEEE_INTERFACE
+#mesondefine HAVE_HPUX11_IEEE_INTERFACE
+#mesondefine HAVE_HPUX_IEEE_INTERFACE
+#mesondefine HAVE_TRU64_IEEE_INTERFACE
+#mesondefine HAVE_IRIX_IEEE_INTERFACE
+#mesondefine HAVE_AIX_IEEE_INTERFACE
+#mesondefine HAVE_FREEBSD_IEEE_INTERFACE
+#mesondefine HAVE_OS2EMX_IEEE_INTERFACE
+#mesondefine HAVE_NETBSD_IEEE_INTERFACE
+#mesondefine HAVE_OPENBSD_IEEE_INTERFACE
+#mesondefine HAVE_DARWIN_IEEE_INTERFACE
+#mesondefine HAVE_DARWIN86_IEEE_INTERFACE
+
+#define PACKAGE "@package@"
+#define PACKAGE_BUGREPORT ""
+#define PACKAGE_NAME "@package@"
+#define PACKAGE_STRING "@package@ @version@"
+#define PACKAGE_TARNAME "@package@"
+#define PACKAGE_URL ""
+#define PACKAGE_VERSION "@version@"
+#define RELEASED /**/
+#define VERSION "@version@"
+
+/* All modern systems have this, obsolescent macro.
+   https://www.gnu.org/software/autoconf/manual/autoconf-2.67/html_node/Particular-Headers.html */
+#define STDC_HEADERS 1
+
+/* Define if you need to hide the static definitions of inline functions */
+/* #undef HIDE_INLINE_STATIC */
+
+/* Define to 1 if type `char' is unsigned and you are not using gcc.  */
+#ifndef __CHAR_UNSIGNED__
+/* # undef __CHAR_UNSIGNED__ */
+#endif
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+/* #undef inline */
+#endif
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* #undef size_t */
+
+/* Define to empty if the keyword `volatile' does not work. Warning: valid
+   code using `volatile' can become incorrect without. Disable with care. */
+/* #undef volatile */
+
+/* Use 0 and 1 for EXIT_SUCCESS and EXIT_FAILURE if we don't have them */
+#if !HAVE_EXIT_SUCCESS_AND_FAILURE
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
+#endif
+
+/* Define a rounding function which moves extended precision values
+   out of registers and rounds them to double-precision. This should
+   be used *sparingly*, in places where it is necessary to keep
+   double-precision rounding for critical expressions while running in
+   extended precision. For example, the following code should ensure
+   exact equality, even when extended precision registers are in use,
+
+      double q = GSL_COERCE_DBL(3.0/7.0) ;
+      if (q == GSL_COERCE_DBL(3.0/7.0)) { ... } ;
+
+   It carries a penalty even when the program is running in double
+   precision mode unless you compile a separate version of the
+   library with HAVE_EXTENDED_PRECISION_REGISTERS turned off. */
+
+#if HAVE_EXTENDED_PRECISION_REGISTERS
+#define GSL_COERCE_DBL(x) (gsl_coerce_double(x))
+#else
+#define GSL_COERCE_DBL(x) (x)
+#endif
+
+/* Substitute gsl functions for missing system functions */
+
+#if !HAVE_DECL_HYPOT
+#define hypot gsl_hypot
+#endif
+
+#if !HAVE_DECL_LOG1P
+#define log1p gsl_log1p
+#endif
+
+#if !HAVE_DECL_EXPM1
+#define expm1 gsl_expm1
+#endif
+
+#if !HAVE_DECL_ACOSH
+#define acosh gsl_acosh
+#endif
+
+#if !HAVE_DECL_ASINH
+#define asinh gsl_asinh
+#endif
+
+#if !HAVE_DECL_ATANH
+#define atanh gsl_atanh
+#endif
+
+#if !HAVE_DECL_LDEXP
+#define ldexp gsl_ldexp
+#endif
+
+#if !HAVE_DECL_FREXP
+#define frexp gsl_frexp
+#endif
+
+#if !HAVE_DECL_ISINF
+#define isinf gsl_isinf
+#endif
+
+#if !HAVE_DECL_ISFINITE
+#define isfinite gsl_finite
+#endif
+
+#if !HAVE_DECL_FINITE
+#define finite gsl_finite
+#endif
+
+#if !HAVE_DECL_ISNAN
+#define isnan gsl_isnan
+#endif
+
+#ifdef __GNUC__
+#define DISCARD_POINTER(p) do { ; } while(p ? 0 : 0);
+#else
+#define DISCARD_POINTER(p) /* ignoring discarded pointer */
+#endif
+
+#if defined(GSL_RANGE_CHECK_OFF) || !defined(GSL_RANGE_CHECK)
+#define GSL_RANGE_CHECK 0  /* turn off range checking by default internally */
+#endif
+
+#define RETURN_IF_NULL(x) if (!x) { return ; }
+
