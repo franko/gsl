@@ -6,8 +6,11 @@ libm = cc.find_library('m', required : false)
 gsl_defines = ['-DHAVE_CONFIG_H']
 
 conf = configuration_data()
+conf.set('package', meson.project_name())
+conf.set('version', meson.project_version())
 conf.set('GSL_DISABLE_DEPRECATED', 1)
 conf.set('HAVE_INLINE', 1)
+
 
 exit_success_code='''#include <stdlib.h>
 int main() {
@@ -57,13 +60,29 @@ if cc.compiles(exit_success_code, name : 'EXIT_SUCCESS is defined')
     conf.set('HAVE_EXIT_SUCCESS_AND_FAILURE', 1)
 endif
 
-ieeefp_h_code='''#include <ieeefp.h>
-int main() {
-    return 0;
-}
-'''
-if cc.compiles(ieeefp_h_code, name : 'Found <ieeefp.h> header file')
-    conf.set('HAVE_IEEEFP_H', 1)
+check_math_functions = ['acosh', 'asinh', 'atanh', 'hypot', 'ldexp', 'frexp', 'expm1', 'isinf', 'isfinite', 'finite', 'isnan', 'log1p']
+foreach function_name : check_math_functions
+    if cc.has_function(function_name, prefix : '#include <math.h>')
+        conf.set('HAVE_DECL_' + function_name.to_upper(), 1)
+    endif
+endforeach
+
+check_string_functions = ['memmove', 'memcpy', 'vprintf', 'strdup', 'strtol', 'strtoul']
+foreach function_name : check_string_functions
+    if cc.has_function(function_name)
+        conf.set('HAVE_DECL_' + function_name.to_upper(), 1)
+    endif
+endforeach
+
+check_headers = ['ieeefp.h', 'inttypes.h', 'dlfcn.h', 'string.h', 'strings.h', 'stdint.h', 'stdlib.h', 'memory.h', 'sys/stat.h', 'sys/types.h', 'unistd.h']
+foreach header_name : check_headers
+    if cc.has_header(header_name)
+        conf.set('HAVE_' + header_name.underscorify().to_upper(), 1)
+    endif
+endforeach
+
+if cc.has_type('fprnd_t', prefix : '#include <float.h>')
+    conf.set('HAVE_DECL_FPRND_T', 1)
 endif
 
 configure_file(input: 'config-meson.h.in', output: 'config.h', configuration: conf)

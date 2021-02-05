@@ -1,32 +1,55 @@
-/* This file is obtained from running ./configure script on Windows using
- msys2. As soon as we have tests the definitions below should be replaced
- by #mesondefine directives. */
-
 #mesondefine GSL_DISABLE_DEPRECATED
 #mesondefine HAVE_IEEE_COMPARISONS
 #mesondefine HAVE_IEEE_DENORMALS
 #mesondefine HAVE_EXIT_SUCCESS_AND_FAILURE
 #mesondefine HAVE_INLINE
+#mesondefine HAVE_DECL_ACOSH
+#mesondefine HAVE_DECL_ASINH
+#mesondefine HAVE_DECL_ATANH
+#mesondefine HAVE_DECL_EXPM1
+#mesondefine HAVE_DECL_FREXP
+#mesondefine HAVE_DECL_HYPOT
+#mesondefine HAVE_DECL_LDEXP
+#mesondefine HAVE_DECL_FINITE
+#mesondefine HAVE_DECL_ISFINITE
+#mesondefine HAVE_DECL_ISINF
+#mesondefine HAVE_DECL_ISNAN
+#mesondefine HAVE_DECL_LOG1P
 #mesondefine HAVE_IEEEFP_H
+#mesondefine HAVE_INTTYPES_H
+#mesondefine HAVE_DLFCN_H
+#mesondefine HAVE_STDINT_H
+#mesondefine HAVE_STDLIB_H
+#mesondefine HAVE_STRINGS_H
+#mesondefine HAVE_STRING_H
+#mesondefine HAVE_SYS_STAT_H
+#mesondefine HAVE_SYS_TYPES_H
+#mesondefine HAVE_UNISTD_H
+#mesondefine HAVE_MEMORY_H
+#mesondefine HAVE_MEMCPY
+#mesondefine HAVE_MEMMOVE
+#mesondefine HAVE_STRDUP
+#mesondefine HAVE_STRTOL
+#mesondefine HAVE_STRTOUL
+#mesondefine HAVE_VPRINTF
+#mesondefine HAVE_DECL_FPRND_T
+
+
+#define PACKAGE "@package@"
+#define PACKAGE_BUGREPORT ""
+#define PACKAGE_NAME "@package@"
+#define PACKAGE_STRING "@package@ @version@"
+#define PACKAGE_TARNAME "@package@"
+#define PACKAGE_URL ""
+#define PACKAGE_VERSION "@version@"
+#define RELEASED /**/
+#define VERSION "@version@"
+
+/* Define to 1 if you have the ANSI C header files. */
+#define STDC_HEADERS 1
 
 /* Define if you have inline with C99 behavior */
 #define HAVE_C99_INLINE 1
-
-/* Define to 1 if you have the declaration of `acosh', and to 0 if you don't.
-   */
-#define HAVE_DECL_ACOSH 1
-
-/* Define to 1 if you have the declaration of `asinh', and to 0 if you don't.
-   */
-#define HAVE_DECL_ASINH 1
-
-/* Define to 1 if you have the declaration of `atanh', and to 0 if you don't.
-   */
-#define HAVE_DECL_ATANH 1
-
-/* Define to 1 if you have the declaration of `expm1', and to 0 if you don't.
-   */
-#define HAVE_DECL_EXPM1 1
 
 /* Define to 1 if you have the declaration of `feenableexcept', and to 0 if
    you don't. */
@@ -35,45 +58,6 @@
 /* Define to 1 if you have the declaration of `fesettrapenable', and to 0 if
    you don't. */
 #define HAVE_DECL_FESETTRAPENABLE 0
-
-/* Define to 1 if you have the declaration of `finite', and to 0 if you don't.
-   */
-#define HAVE_DECL_FINITE 1
-
-/* Define to 1 if you have the declaration of `fprnd_t', and to 0 if you
-   don't. */
-#define HAVE_DECL_FPRND_T 0
-
-/* Define to 1 if you have the declaration of `frexp', and to 0 if you don't.
-   */
-#define HAVE_DECL_FREXP 1
-
-/* Define to 1 if you have the declaration of `hypot', and to 0 if you don't.
-   */
-#define HAVE_DECL_HYPOT 1
-
-/* Define to 1 if you have the declaration of `isfinite', and to 0 if you
-   don't. */
-#define HAVE_DECL_ISFINITE 1
-
-/* Define to 1 if you have the declaration of `isinf', and to 0 if you don't.
-   */
-#define HAVE_DECL_ISINF 1
-
-/* Define to 1 if you have the declaration of `isnan', and to 0 if you don't.
-   */
-#define HAVE_DECL_ISNAN 1
-
-/* Define to 1 if you have the declaration of `ldexp', and to 0 if you don't.
-   */
-#define HAVE_DECL_LDEXP 1
-
-/* Define to 1 if you have the declaration of `log1p', and to 0 if you don't.
-   */
-#define HAVE_DECL_LOG1P 1
-
-/* Define to 1 if you have the <dlfcn.h> header file. */
-/* #undef HAVE_DLFCN_H */
 
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 /* #undef HAVE_DOPRNT */
@@ -84,89 +68,12 @@
 /* Define if x86 processor has sse extensions. */
 /* #undef HAVE_FPU_X86_SSE */
 
-/* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
-
-/* Define to 1 if you have the `m' library (-lm). */
-#define HAVE_LIBM 1
-
-/* Define to 1 if you have the `memcpy' function. */
-#define HAVE_MEMCPY 1
-
-/* Define to 1 if you have the `memmove' function. */
-#define HAVE_MEMMOVE 1
-
-/* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
-
 /* Define this if printf can handle %Lf for long double */
 #define HAVE_PRINTF_LONGDOUBLE 1
 
-/* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 1
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
-
-/* Define to 1 if you have the `strdup' function. */
-#define HAVE_STRDUP 1
-
-/* Define to 1 if you have the <strings.h> header file. */
-#define HAVE_STRINGS_H 1
-
-/* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
-
-/* Define to 1 if you have the `strtol' function. */
-#define HAVE_STRTOL 1
-
-/* Define to 1 if you have the `strtoul' function. */
-#define HAVE_STRTOUL 1
-
-/* Define to 1 if you have the <sys/stat.h> header file. */
-#define HAVE_SYS_STAT_H 1
-
-/* Define to 1 if you have the <sys/types.h> header file. */
-#define HAVE_SYS_TYPES_H 1
-
-/* Define to 1 if you have the <unistd.h> header file. */
-#define HAVE_UNISTD_H 1
-
-/* Define to 1 if you have the `vprintf' function. */
-#define HAVE_VPRINTF 1
 
 /* Define if you need to hide the static definitions of inline functions */
 /* #undef HIDE_INLINE_STATIC */
-
-/* Name of package */
-#define PACKAGE "gsl"
-
-/* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT ""
-
-/* Define to the full name of this package. */
-#define PACKAGE_NAME "gsl"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "gsl 2.1"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "gsl"
-
-/* Define to the home page for this package. */
-#define PACKAGE_URL ""
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "2.1"
-
-/* Defined if this is an official release */
-#define RELEASED /**/
-
-/* Define to 1 if you have the ANSI C header files. */
-#define STDC_HEADERS 1
-
-/* Version number of package */
-#define VERSION "2.1"
 
 /* Define to 1 if type `char' is unsigned and you are not using gcc.  */
 #ifndef __CHAR_UNSIGNED__
