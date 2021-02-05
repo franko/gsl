@@ -57,6 +57,15 @@ if cc.compiles(exit_success_code, name : 'EXIT_SUCCESS is defined')
     conf.set('HAVE_EXIT_SUCCESS_AND_FAILURE', 1)
 endif
 
+ieeefp_h_code='''#include <ieeefp.h>
+int main() {
+    return 0;
+}
+'''
+if cc.compiles(ieeefp_h_code, name : 'Found <ieeefp.h> header file')
+    conf.set('HAVE_IEEEFP_H', 1)
+endif
+
 configure_file(input: 'config-meson.h.in', output: 'config.h', configuration: conf)
 
 gsl_include_dir = include_directories('include')
@@ -137,21 +146,25 @@ if cblas_libname == 'internal'
         dir_sources += 'cblas' / filename
     endforeach
     module_include_dir = include_directories('cblas')
-    cblas_dep = declare_dependency(
-        sources : dir_sources,
-        include_directories : [gsl_include_dir, module_include_dir],
+    cblas_lib = static_library('gslcblas',
+        dir_sources,
+        include_directories: [gsl_include_dir, module_include_dir],
         c_args : gsl_defines,
-        dependencies : libm
+        dependencies: libm
     )
+    cblas_dep = declare_dependency(link_with : cblas_lib)
 else
     cblas_dep = dependency(cblas_libname)
 endif
+
+install_subdir('include/gsl', install_dir : 'include')
 
 # we may need to add the placeholder source file here
 gsl_lib = library('gsl', [],
     include_directories: gsl_include_dir,
     c_args: gsl_defines,
     link_whole: gsl_module_libs,
-    dependencies: [cblas_dep, libm]
+    dependencies: [cblas_dep, libm],
+    install: true
 )
 

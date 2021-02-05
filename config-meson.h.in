@@ -7,6 +7,7 @@
 #mesondefine HAVE_IEEE_DENORMALS
 #mesondefine HAVE_EXIT_SUCCESS_AND_FAILURE
 #mesondefine HAVE_INLINE
+#mesondefine HAVE_IEEEFP_H
 
 /* Define if you have inline with C99 behavior */
 #define HAVE_C99_INLINE 1
@@ -82,9 +83,6 @@
 
 /* Define if x86 processor has sse extensions. */
 /* #undef HAVE_FPU_X86_SSE */
-
-/* Define to 1 if you have the <ieeefp.h> header file. */
-#define HAVE_IEEEFP_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
