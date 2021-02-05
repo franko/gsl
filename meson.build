@@ -1,4 +1,4 @@
-project('gsl', 'c',  version: '2.1', default_options : 'c_std=c99')
+project('gsl', 'c', version: '2.1', default_options : 'c_std=c99')
 
 cc = meson.get_compiler('c')
 libm = cc.find_library('m', required : false)
@@ -11,6 +11,28 @@ conf.set('version', meson.project_version())
 conf.set('GSL_DISABLE_DEPRECATED', 1)
 conf.set('HAVE_INLINE', 1)
 
+if target_machine.cpu_family() in ['m68k', 'x86', 'x86_64']
+    conf.set('HAVE_EXTENDED_PRECISION_REGISTERS', 1)
+    message('CPU family has extended precision register')
+endif
+
+if target_machine.cpu_family() in ['x86', 'x86_64'] and target_machine.system() in ['linux', 'gnu']
+    conf.set('HAVE_GNUX86_IEEE_INTERFACE', 1)
+    message('Detected x86 GNU/Linux IEEE interface')
+elif target_machine.cpu_family() == 'm68k' and target_machine.system() == 'linux'
+    conf.set('HAVE_GNUM68K_IEEE_INTERFACE', 1)
+    message('Detected M68k Linux IEEE interface')
+elif target_machine.cpu_family() in ['x86', 'x86_64'] and target_machine.system() == 'darwin'
+    conf.set('HAVE_DARWIN86_IEEE_INTERFACE', 1)
+    message('Detected x86 Darwin IEEE interface')
+elif target_machine.system() in ['freebsd', 'netbsd', 'openbsd']
+    conf.set('HAVE_' + target_machine.system().to_upper() + '_IEEE_INTERFACE', 1)
+    message('Detected ' + target_machine.system() + ' IEEE interface')
+else
+    # There are other known interfaces but they are obsolete and are not covered
+    # in the Meson config.
+    message('No known IEEE interface found')
+endif
 
 exit_success_code='''#include <stdlib.h>
 int main() {
@@ -51,13 +73,37 @@ if ieee_denormals_check.returncode() == 0
     conf.set('HAVE_IEEE_DENORMALS', 1)
 endif
 
-exit_success_code='''#include <stdlib.h>
-int main() {
-    return EXIT_SUCCESS;
+have_c99inline_code = '''extern inline void* foo() { foo(); return &foo ; };
+int main () {
+  return foo() != 0;
+  return 0;
+}'''
+if cc.compiles(have_c99inline_code, name : 'C99-style inline')
+    conf.set('HAVE_C99_INLINE', 1)
+endif
+
+fpu_sse_code = '''#include <stdlib.h>
+#define _FPU_SETMXCSR(cw_sse) asm volatile ("ldmxcsr %0" : : "m" (*&cw_sse))
+int main () {
+  unsigned int mode = 0x1f80; _FPU_SETMXCSR(mode); exit(0); return 0;
 }
 '''
-if cc.compiles(exit_success_code, name : 'EXIT_SUCCESS is defined')
-    conf.set('HAVE_EXIT_SUCCESS_AND_FAILURE', 1)
+if cc.compiles(fpu_sse_code, name : 'x86 FPU SSE extensions')
+    conf.set('HAVE_FPU_X86_SSE', 1)
+endif
+
+printf_longdouble_check = '''#include <stdlib.h>
+#include <stdio.h>
+int main () {
+    const char * s = "5678.25"; long double x = 1.234 ;
+    fprintf(stderr,"%Lg\n",x) ;
+    sscanf(s, "%Lg", &x);
+    if (x == 5678.25) {exit (0);} else {exit(1); }
+}
+'''
+printf_longdouble_run = cc.run(printf_longdouble_check, name : 'long double printf')
+if printf_longdouble_run.returncode() == 0
+    conf.set('HAVE_PRINTF_LONGDOUBLE', 1)
 endif
 
 check_math_functions = ['acosh', 'asinh', 'atanh', 'hypot', 'ldexp', 'frexp', 'expm1', 'isinf', 'isfinite', 'finite', 'isnan', 'log1p']
@@ -70,9 +116,17 @@ endforeach
 check_string_functions = ['memmove', 'memcpy', 'vprintf', 'strdup', 'strtol', 'strtoul']
 foreach function_name : check_string_functions
     if cc.has_function(function_name)
+        conf.set('HAVE_' + function_name.to_upper(), 1)
+    endif
+endforeach
+
+check_fenv_functions = ['feenableexcept', 'fesettrapenable']
+foreach function_name : check_fenv_functions
+    if cc.has_function(function_name, prefix : '#define _GNU_SOURCE 1\n#include <fenv.h>')
         conf.set('HAVE_DECL_' + function_name.to_upper(), 1)
     endif
 endforeach
+
 
 check_headers = ['ieeefp.h', 'inttypes.h', 'dlfcn.h', 'string.h', 'strings.h', 'stdint.h', 'stdlib.h', 'memory.h', 'sys/stat.h', 'sys/types.h', 'unistd.h']
 foreach header_name : check_headers

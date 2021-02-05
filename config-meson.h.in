@@ -33,7 +33,30 @@
 #mesondefine HAVE_STRTOUL
 #mesondefine HAVE_VPRINTF
 #mesondefine HAVE_DECL_FPRND_T
+#mesondefine HAVE_C99_INLINE
+#mesondefine HAVE_DECL_FEENABLEEXCEPT
+#mesondefine HAVE_DECL_FESETTRAPENABLE
+#mesondefine HAVE_EXTENDED_PRECISION_REGISTERS
+#mesondefine HAVE_FPU_X86_SSE
+#mesondefine HAVE_PRINTF_LONGDOUBLE
 
+#mesondefine HAVE_GNUSPARC_IEEE_INTERFACE
+#mesondefine HAVE_GNUM68K_IEEE_INTERFACE
+#mesondefine HAVE_GNUPPC_IEEE_INTERFACE
+#mesondefine HAVE_GNUX86_IEEE_INTERFACE
+#mesondefine HAVE_SUNOS4_IEEE_INTERFACE
+#mesondefine HAVE_SOLARIS_IEEE_INTERFACE
+#mesondefine HAVE_HPUX11_IEEE_INTERFACE
+#mesondefine HAVE_HPUX_IEEE_INTERFACE
+#mesondefine HAVE_TRU64_IEEE_INTERFACE
+#mesondefine HAVE_IRIX_IEEE_INTERFACE
+#mesondefine HAVE_AIX_IEEE_INTERFACE
+#mesondefine HAVE_FREEBSD_IEEE_INTERFACE
+#mesondefine HAVE_OS2EMX_IEEE_INTERFACE
+#mesondefine HAVE_NETBSD_IEEE_INTERFACE
+#mesondefine HAVE_OPENBSD_IEEE_INTERFACE
+#mesondefine HAVE_DARWIN_IEEE_INTERFACE
+#mesondefine HAVE_DARWIN86_IEEE_INTERFACE
 
 #define PACKAGE "@package@"
 #define PACKAGE_BUGREPORT ""
@@ -45,32 +68,9 @@
 #define RELEASED /**/
 #define VERSION "@version@"
 
-/* Define to 1 if you have the ANSI C header files. */
+/* All modern systems have this, obsolescent macro.
+   https://www.gnu.org/software/autoconf/manual/autoconf-2.67/html_node/Particular-Headers.html */
 #define STDC_HEADERS 1
-
-/* Define if you have inline with C99 behavior */
-#define HAVE_C99_INLINE 1
-
-/* Define to 1 if you have the declaration of `feenableexcept', and to 0 if
-   you don't. */
-#define HAVE_DECL_FEENABLEEXCEPT 0
-
-/* Define to 1 if you have the declaration of `fesettrapenable', and to 0 if
-   you don't. */
-#define HAVE_DECL_FESETTRAPENABLE 0
-
-/* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
-/* #undef HAVE_DOPRNT */
-
-/* Defined on architectures with excess floating-point precision */
-#define HAVE_EXTENDED_PRECISION_REGISTERS 1
-
-/* Define if x86 processor has sse extensions. */
-/* #undef HAVE_FPU_X86_SSE */
-
-/* Define this if printf can handle %Lf for long double */
-#define HAVE_PRINTF_LONGDOUBLE 1
-
 
 /* Define if you need to hide the static definitions of inline functions */
 /* #undef HIDE_INLINE_STATIC */
@@ -98,25 +98,6 @@
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 #endif
-
-/* Define one of these if you have a known IEEE arithmetic interface */
-/* #undef HAVE_GNUSPARC_IEEE_INTERFACE */
-/* #undef HAVE_GNUM68K_IEEE_INTERFACE */
-/* #undef HAVE_GNUPPC_IEEE_INTERFACE */
-/* #undef HAVE_GNUX86_IEEE_INTERFACE */
-/* #undef HAVE_SUNOS4_IEEE_INTERFACE */
-/* #undef HAVE_SOLARIS_IEEE_INTERFACE */
-/* #undef HAVE_HPUX11_IEEE_INTERFACE */
-/* #undef HAVE_HPUX_IEEE_INTERFACE */
-/* #undef HAVE_TRU64_IEEE_INTERFACE */
-/* #undef HAVE_IRIX_IEEE_INTERFACE */
-/* #undef HAVE_AIX_IEEE_INTERFACE */
-/* #undef HAVE_FREEBSD_IEEE_INTERFACE */
-/* #undef HAVE_OS2EMX_IEEE_INTERFACE */
-/* #undef HAVE_NETBSD_IEEE_INTERFACE */
-/* #undef HAVE_OPENBSD_IEEE_INTERFACE */
-/* #undef HAVE_DARWIN_IEEE_INTERFACE */
-/* #undef HAVE_DARWIN86_IEEE_INTERFACE */
 
 /* Define a rounding function which moves extended precision values
    out of registers and rounds them to double-precision. This should
