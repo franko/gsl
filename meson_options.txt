@@ -1,0 +1,2 @@
+option('cblas', type : 'string', value : 'internal', description: 'cblas library')
+
