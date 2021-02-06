@@ -1,5 +1,7 @@
 project('gsl', 'c', version: '2.1', default_options : 'c_std=gnu99')
 
+pkg = import('pkgconfig')
+
 cc = meson.get_compiler('c')
 libm = cc.find_library('m', required : false)
 
@@ -233,11 +235,18 @@ endif
 install_subdir('include/gsl', install_dir : 'include')
 
 # we may need to add the placeholder source file here
-gsl_lib = library('gsl', [],
+libgsl = library('gsl', [],
     include_directories: gsl_include_dir,
     c_args: gsl_defines,
     link_whole: gsl_module_libs,
     dependencies: [cblas_dep, libm],
     install: true
+)
+
+pkg.generate(libgsl,
+    filebase : 'gsl',
+    name : 'gsl',
+    version : meson.project_version(),
+    description : 'GNU Scientific Library',
 )
 
