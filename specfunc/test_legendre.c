@@ -293,10 +293,10 @@ test_legendre_schmidt(const size_t lmax, const double csphase, const char *desc)
       /* check p = p2 */
       for (i = 0; i < nlm; ++i)
         {
-          if (fabs(p2[i]) < GSL_DBL_MIN)
-            continue;
-
-          gsl_test_rel(p[i], p2[i], 1.0e-10, "%s deriv2 i=%zu", desc, i);
+          if (fabs(p2[i]) < 1.0e3 * GSL_DBL_EPSILON)
+            gsl_test_abs(p[i], p2[i], 1.0e-10, "%s deriv2 i=%zu", desc, i);
+          else
+            gsl_test_rel(p[i], p2[i], 1.0e-10, "%s deriv2 i=%zu", desc, i);
         }
 
       for (l = 0; l <= lmax; ++l)
@@ -331,7 +331,7 @@ test_legendre_norm(const gsl_sf_legendre_t norm_type, const size_t lmax,
   double *p_schmidt, *dp_schmidt, *d2p_schmidt;
   double *p, *dp, *d2p;
   size_t dim;
-  double (*factor)(const size_t l, const size_t m);
+  double (*factor)(const size_t l, const size_t m) = NULL;
 
   dim = gsl_sf_legendre_array_n(lmax);
   p = malloc(sizeof(double) * dim);
@@ -342,7 +342,9 @@ test_legendre_norm(const gsl_sf_legendre_t norm_type, const size_t lmax,
   d2p_schmidt = malloc(sizeof(double) * dim);
 
   if (norm_type == GSL_SF_LEGENDRE_SPHARM)
-    factor = &test_factor_spharm;
+    {
+      factor = &test_factor_spharm;
+    }
   else if (norm_type == GSL_SF_LEGENDRE_FULL)
     {
       factor = &test_factor_full;
@@ -449,7 +451,7 @@ test_legendre_unnorm(const size_t lmax_orig, const char *desc)
                                    p_schmidt, dp_schmidt, d2p_schmidt);
       gsl_sf_legendre_deriv2_array(GSL_SF_LEGENDRE_NONE, lmax, x, p, dp, d2p);
 
-      for (l = 0; l <= lmax; ++l)
+      for (l = 0; l <= (size_t) lmax; ++l)
         {
           double a_lm = sqrt(2.0 / (double)l / (l + 1.0));
           size_t idx;
@@ -457,11 +459,20 @@ test_legendre_unnorm(const size_t lmax_orig, const char *desc)
           /* test S(l,0) = P(l,0) */
           idx = gsl_sf_legendre_array_index(l, 0);
           gsl_test_rel(p[idx], p_schmidt[idx], 1.0e-10,
-                       "unnorm l=%zu, m=0, x=%f", l, x);
+                       "legendre unnorm l=%zu, m=0, x=%f", l, x);
           gsl_test_rel(dp[idx], dp_schmidt[idx], 1.0e-10,
-                       "unnorm deriv l=%zu, m=0, x=%f", l, x);
-          gsl_test_rel(d2p[idx], d2p_schmidt[idx], 1.0e-10,
-                       "unnorm deriv2 l=%zu, m=0, x=%f", l, x);
+                       "legendre unnorm deriv l=%zu, m=0, x=%f", l, x);
+
+          if (l > 1)
+            {
+              gsl_test_rel(d2p[idx], d2p_schmidt[idx], 1.0e-10,
+                           "legendre unnorm deriv2 l=%zu, m=0, x=%f", l, x);
+            }
+          else
+            {
+              gsl_test_abs(d2p[idx], d2p_schmidt[idx], 1.0e-10,
+                           "legendre unnorm deriv2 l=%zu, m=0, x=%f", l, x);
+            }
 
           /* test S(l,m) = a_{lm} * P(l,m) for m > 0 */
           for (m = 1; m <= l; ++m)
@@ -469,11 +480,11 @@ test_legendre_unnorm(const size_t lmax_orig, const char *desc)
               idx = gsl_sf_legendre_array_index(l, m);
 
               gsl_test_rel(a_lm * p[idx], p_schmidt[idx], 1.0e-9,
-                           "unnorm l=%zu, m=%zu, x=%f", l, m, x);
+                           "legendre unnorm l=%zu, m=%zu, x=%f", l, m, x);
               gsl_test_abs(a_lm * dp[idx], dp_schmidt[idx], 1.0e-10,
-                           "unnorm deriv l=%zu, m=%zu, x=%f", l, m, x);
+                           "legendre unnorm deriv l=%zu, m=%zu, x=%f", l, m, x);
               gsl_test_abs(a_lm * d2p[idx], d2p_schmidt[idx], 1.0e-10,
-                           "unnorm deriv2 l=%zu, m=%zu, x=%f", l, m, x);
+                           "legendre unnorm deriv2 l=%zu, m=%zu, x=%f", l, m, x);
 
               a_lm /= sqrt((double) (l + m + 1)) *
                       sqrt((double) (l - m));
@@ -482,7 +493,7 @@ test_legendre_unnorm(const size_t lmax_orig, const char *desc)
 
       gsl_sf_legendre_array(GSL_SF_LEGENDRE_NONE, lmax, x, p2);
       /* test if p = p2 */
-      for (l = 0; l <= lmax; ++l)
+      for (l = 0; l <= (size_t) lmax; ++l)
         {
           for (m = 0; m <= l; ++m)
             {

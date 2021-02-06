@@ -27,6 +27,12 @@
 #include <gsl/gsl_test.h>
 #include <gsl/gsl_ieee_utils.h>
 #include <gsl/gsl_integration.h>
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_statistics.h>
 
 #define N 100000
 
@@ -158,6 +164,12 @@ double test_bivariate_gaussian3 (void);
 double test_bivariate_gaussian3_pdf (double x);
 double test_bivariate_gaussian4 (void);
 double test_bivariate_gaussian4_pdf (double x);
+void test_multivariate_gaussian_log_pdf (void);
+void test_multivariate_gaussian_pdf (void);
+void test_multivariate_gaussian (void);
+void test_wishart_log_pdf (void);
+void test_wishart_pdf (void);
+void test_wishart (void);
 double test_gumbel1 (void);
 double test_gumbel1_pdf (double x);
 double test_gumbel2 (void);
@@ -332,6 +344,14 @@ main (void)
   testPDF (FUNC2 (bivariate_gaussian2));
   testPDF (FUNC2 (bivariate_gaussian3));
   testPDF (FUNC2 (bivariate_gaussian4));
+
+  test_multivariate_gaussian_log_pdf ();
+  test_multivariate_gaussian_pdf ();
+  test_multivariate_gaussian ();
+
+  test_wishart_log_pdf ();
+  test_wishart_pdf ();
+  test_wishart ();
 
   testPDF (FUNC2 (gumbel1));
   testPDF (FUNC2 (gumbel2));
@@ -1679,6 +1699,308 @@ test_bivariate_gaussian4_pdf (double x)
   double sigma = sqrt (su * su + sv * sv);
 
   return gsl_ran_gaussian_pdf (x, sigma);
+}
+
+/* Examples from R (GPL): http://www.r-project.org/
+ * library(mvtnorm); packageVersion("mvtnorm") # 1.0.5
+ * mu <- c(1, 2)
+ * Sigma <- matrix(c(4,2, 2,3), ncol=2)
+ * x <- c(0, 0)
+ * sprintf("%.15f", dmvnorm(x=x, mean=mu, sigma=Sigma, log=TRUE)) # -3.565097837249263
+ */
+void
+test_multivariate_gaussian_log_pdf (void)
+{
+  size_t d = 2;
+  const double exp_res = -3.565097837249263;
+  double obs_res;
+  gsl_vector * mu = gsl_vector_calloc(d);
+  gsl_matrix * Sigma = gsl_matrix_calloc(d, d);
+  gsl_matrix * L = gsl_matrix_calloc(d, d);
+  gsl_vector * x = gsl_vector_calloc(d);
+  gsl_vector * work = gsl_vector_calloc(d);
+
+  gsl_vector_set(mu, 0, 1);
+  gsl_vector_set(mu, 1, 2);
+
+  gsl_matrix_set(Sigma, 0, 0, 4);
+  gsl_matrix_set(Sigma, 1, 1, 3);
+  gsl_matrix_set(Sigma, 0, 1, 2);
+  gsl_matrix_set(Sigma, 1, 0, 2);
+
+  gsl_matrix_memcpy(L, Sigma);
+  gsl_linalg_cholesky_decomp1(L);
+
+  gsl_ran_multivariate_gaussian_log_pdf(x, mu, L, &obs_res, work);
+  gsl_test_rel(obs_res, exp_res, 1.0e-10, "gsl_ran_multivariate_gaussian_log_pdf");
+
+  gsl_vector_free(mu);
+  gsl_matrix_free(Sigma);
+  gsl_matrix_free(L);
+  gsl_vector_free(x);
+  gsl_vector_free(work);
+}
+
+/* Examples from R (GPL): http://www.r-project.org/
+ * library(mvtnorm); packageVersion("mvtnorm") # 1.0.5
+ * mu <- c(1, 2)
+ * Sigma <- matrix(c(4,2, 2,3), ncol=2)
+ * x <- c(0, 0)
+ * sprintf("%.15f", dmvnorm(x=x, mean=mu, sigma=Sigma, log=FALSE)) # 0.028294217120391
+ */
+void
+test_multivariate_gaussian_pdf (void)
+{
+  size_t d = 2;
+  const double exp_res = 0.028294217120391;
+  double obs_res = 0;
+  gsl_vector * mu = gsl_vector_calloc(d);
+  gsl_matrix * Sigma = gsl_matrix_calloc(d, d);
+  gsl_matrix * L = gsl_matrix_calloc(d, d);
+  gsl_vector * x = gsl_vector_calloc(d);
+  gsl_vector * work = gsl_vector_calloc(d);
+
+  gsl_vector_set(mu, 0, 1);
+  gsl_vector_set(mu, 1, 2);
+
+  gsl_matrix_set(Sigma, 0, 0, 4);
+  gsl_matrix_set(Sigma, 1, 1, 3);
+  gsl_matrix_set(Sigma, 0, 1, 2);
+  gsl_matrix_set(Sigma, 1, 0, 2);
+
+  gsl_matrix_memcpy(L, Sigma);
+  gsl_linalg_cholesky_decomp1(L);
+
+  gsl_ran_multivariate_gaussian_pdf(x, mu, L, &obs_res, work);
+  gsl_test_rel(obs_res, exp_res, 1.0e-10, "gsl_ran_multivariate_gaussian_pdf");
+
+  gsl_vector_free(mu);
+  gsl_matrix_free(Sigma);
+  gsl_matrix_free(L);
+  gsl_vector_free(x);
+  gsl_vector_free(work);
+}
+
+/* Draw N random vectors according to a given MVN(mu,Sigma). Then, check that
+ * one can't reject the null hypothesis that the sample mean is equal to
+ * the true mean, using Hotelling's test statistic at 95% confidence level.
+ * Details in "Applied Multivariate Statistical Analysis" by  Johnson & Wichern
+ * (2001), section 5, page 212.
+ */
+void
+test_multivariate_gaussian (void)
+{
+  size_t d = 2, i = 0;
+  int status = 0;
+  double T2 = 0, threshold = 0, alpha = 0.05, pvalue = 0;
+  gsl_vector * mu = gsl_vector_calloc(d);
+  gsl_matrix * Sigma = gsl_matrix_calloc(d, d);
+  gsl_matrix * L = gsl_matrix_calloc(d, d);
+  gsl_vector * sample = gsl_vector_calloc(d);
+  gsl_matrix * samples = gsl_matrix_calloc(N, d);
+  gsl_vector * mu_hat = gsl_vector_calloc(d);
+  gsl_matrix * Sigma_hat = gsl_matrix_calloc(d, d);
+  gsl_vector * mu_hat_ctr = gsl_vector_calloc(d);
+  gsl_matrix * Sigma_hat_inv = gsl_matrix_calloc(d, d);
+  gsl_vector * tmp = gsl_vector_calloc(d);
+
+  /* set the true values of parameters mu and Sigma */
+  gsl_vector_set(mu, 0, 1);
+  gsl_vector_set(mu, 1, 2);
+  gsl_matrix_set(Sigma, 0, 0, 4);
+  gsl_matrix_set(Sigma, 1, 1, 3);
+  gsl_matrix_set(Sigma, 0, 1, 2);
+  gsl_matrix_set(Sigma, 1, 0, 2);
+
+  /* draw N random vectors */
+  gsl_matrix_memcpy(L, Sigma);
+  gsl_linalg_cholesky_decomp1(L);
+  for (i = 0; i < N; ++i) {
+    gsl_ran_multivariate_gaussian(r_global, mu, L, sample);
+    gsl_matrix_set_row(samples, i, sample);
+  }
+
+  /* compute the maximum-likelihood estimates */
+  gsl_ran_multivariate_gaussian_mean (samples, mu_hat);
+  gsl_ran_multivariate_gaussian_vcov (samples, Sigma_hat);
+
+  /* compute Hotelling's test statistic:
+     T^2 = n (hat{mu} - mu)' hat{Sigma}^-1 (hat{mu} - mu) */
+  gsl_vector_memcpy(mu_hat_ctr, mu_hat);
+  gsl_vector_sub(mu_hat_ctr, mu);
+  gsl_matrix_memcpy(Sigma_hat_inv, Sigma_hat);
+  gsl_linalg_cholesky_decomp1(Sigma_hat_inv);
+  gsl_linalg_cholesky_invert(Sigma_hat_inv);
+  gsl_blas_dgemv(CblasNoTrans, 1, Sigma_hat_inv, mu_hat_ctr, 0, tmp);
+  gsl_blas_ddot(mu_hat_ctr, tmp, &T2);
+  T2 *= N;
+
+  /* test if the null hypothesis (hat{mu} = mu) can be rejected 
+   at the alpha level*/
+  threshold = (N-1) * d / (double)(N-d) * gsl_cdf_fdist_Pinv(1-alpha, d, N-d);
+  status = (T2 > threshold);
+  gsl_test(status,
+           "test gsl_ran_multivariate_gaussian: T2 %f < %f",
+           T2, threshold);
+  pvalue = gsl_cdf_fdist_Q(T2, d, N-d);
+  status = (pvalue < alpha);
+  gsl_test(status,
+           "test gsl_ran_multivariate_gaussian: p value %f > %f",
+           pvalue, alpha);
+
+  gsl_vector_free(mu);
+  gsl_matrix_free(Sigma);
+  gsl_matrix_free(L);
+  gsl_vector_free(sample);
+  gsl_matrix_free(samples);
+  gsl_vector_free(mu_hat);
+  gsl_matrix_free(Sigma_hat);
+  gsl_vector_free(mu_hat_ctr);
+  gsl_matrix_free(Sigma_hat_inv);
+  gsl_vector_free(tmp);
+}
+
+
+/* Examples from R (GPL): http://www.r-project.org/
+ * R> version$version.string # R version 3.4.1 (2017-06-30)
+ * R> library(MCMCpack); packageVersion("MCMCpack") # 1.3.9
+ * R> df <- 3
+ * R> V <- matrix(data=c(1, 0.3, 0.3, 1), nrow=2, ncol=2)
+ * R> X <- matrix(data=c(2.213322, 1.453357, 1.453357, 3.285779), nrow=2, ncol=2)
+ * R> sprintf("%.15f", log(dwish(W=X, v=df, S=V))) # -4.931913612377813
+ */
+void
+test_wishart_log_pdf (void)
+{
+  size_t d = 2;
+  const double df = 3, exp_res = -4.931913612377813;
+  double obs_res;
+  gsl_matrix * V = gsl_matrix_calloc(d, d);
+  gsl_matrix * L = gsl_matrix_calloc(d, d);
+  gsl_matrix * X = gsl_matrix_calloc(d, d);
+  gsl_matrix * L_X = gsl_matrix_calloc(d, d);
+  gsl_matrix * work = gsl_matrix_calloc(d, d);
+
+  gsl_matrix_set(V, 0, 0, 1);
+  gsl_matrix_set(V, 1, 1, 1);
+  gsl_matrix_set(V, 0, 1, 0.3);
+  gsl_matrix_set(V, 1, 0, 0.3);
+
+  gsl_matrix_memcpy(L, V);
+  gsl_linalg_cholesky_decomp1(L);
+
+  gsl_matrix_set(X, 0, 0, 2.213322);
+  gsl_matrix_set(X, 1, 1, 3.285779);
+  gsl_matrix_set(X, 0, 1, 1.453357);
+  gsl_matrix_set(X, 1, 0, 1.453357);
+
+  gsl_matrix_memcpy(L_X, X);
+  gsl_linalg_cholesky_decomp1(L_X);
+
+  gsl_ran_wishart_log_pdf(X, L_X, df, L, &obs_res, work);
+  gsl_test_rel(obs_res, exp_res, 1.0e-10, "gsl_ran_wishart_log_pdf");
+
+  gsl_matrix_free(V);
+  gsl_matrix_free(L);
+  gsl_matrix_free(X);
+  gsl_matrix_free(L_X);
+  gsl_matrix_free(work);
+}
+
+
+/* Examples from R (GPL): http://www.r-project.org/
+ * R> version$version.string # R version 3.4.1 (2017-06-30)
+ * R> library(MCMCpack); packageVersion("MCMCpack") # 1.3.9
+ * R> df <- 3
+ * R> V <- matrix(data=c(1, 0.3, 0.3, 1), nrow=2, ncol=2)
+ * R> X <- matrix(data=c(2.213322, 1.453357, 1.453357, 3.285779), nrow=2, ncol=2)
+ * R> sprintf("%.15f", dwish(W=X, v=df, S=V)) # 0.007212687778224
+ */
+void
+test_wishart_pdf (void)
+{
+  size_t d = 2;
+  const double df = 3, exp_res = 0.007212687778224;
+  double obs_res;
+  gsl_matrix * V = gsl_matrix_calloc(d, d);
+  gsl_matrix * L = gsl_matrix_calloc(d, d);
+  gsl_matrix * X = gsl_matrix_calloc(d, d);
+  gsl_matrix * L_X = gsl_matrix_calloc(d, d);
+  gsl_matrix * work = gsl_matrix_calloc(d, d);
+
+  gsl_matrix_set(V, 0, 0, 1);
+  gsl_matrix_set(V, 1, 1, 1);
+  gsl_matrix_set(V, 0, 1, 0.3);
+  gsl_matrix_set(V, 1, 0, 0.3);
+
+  gsl_matrix_memcpy(L, V);
+  gsl_linalg_cholesky_decomp1(L);
+
+  gsl_matrix_set(X, 0, 0, 2.213322);
+  gsl_matrix_set(X, 1, 1, 3.285779);
+  gsl_matrix_set(X, 0, 1, 1.453357);
+  gsl_matrix_set(X, 1, 0, 1.453357);
+
+  gsl_matrix_memcpy(L_X, X);
+  gsl_linalg_cholesky_decomp1(L_X);
+
+  gsl_ran_wishart_pdf(X, L_X, df, L, &obs_res, work);
+  gsl_test_rel(obs_res, exp_res, 1.0e-10, "gsl_ran_wishart_pdf");
+
+  gsl_matrix_free(V);
+  gsl_matrix_free(L);
+  gsl_matrix_free(X);
+  gsl_matrix_free(L_X);
+  gsl_matrix_free(work);
+}
+
+
+/* Draw N random "matrices" according to a W_d(df,V) with d=1 and V=1,
+ * and check that their mean and variance are close enough to those of
+ * a Chi-squared(df), respectively df and 2df.
+ */
+void
+test_wishart (void)
+{
+  size_t d = 1, i, j;
+  double df[5] = {1, 3, 5, 7, 9}, mean_wishart, var_wishart;
+  int status;
+  gsl_matrix * V = gsl_matrix_calloc(d, d);
+  gsl_matrix * L = gsl_matrix_calloc(d, d);
+  gsl_matrix * sample_wishart = gsl_matrix_calloc(d, d);
+  gsl_matrix * work = gsl_matrix_calloc(d, d);
+  gsl_vector * samples_wishart = gsl_vector_calloc(N);
+
+  gsl_matrix_set(V, 0, 0, 1.0);
+  gsl_matrix_memcpy(L, V);
+  gsl_linalg_cholesky_decomp1(L);
+
+  for (j = 0; j < 5; ++j) { /* for loop over df */
+
+    /* draw N random variables from W(df,V) */
+    for (i = 0; i < N; ++i) {
+      status = gsl_ran_wishart(r_global, df[j], L, sample_wishart, work);
+      gsl_vector_set(samples_wishart, i, gsl_matrix_get(sample_wishart, 0, 0));
+    }
+
+    /* compute their mean and variance */
+    mean_wishart = gsl_stats_mean(samples_wishart->data,
+                                  samples_wishart->stride, N);
+    var_wishart = gsl_stats_variance_m(samples_wishart->data,
+                                       samples_wishart->stride,
+                                       N, mean_wishart);
+
+    /* check */
+    gsl_test_rel(mean_wishart, df[j], 1.0e-1, "gsl_ran_wishart, mean");
+    gsl_test_rel(var_wishart, 2*df[j], 1.0e-1, "gsl_ran_wishart, var");
+
+  } /* end of for loop over df */
+
+  gsl_matrix_free(V);
+  gsl_matrix_free(L);
+  gsl_matrix_free(sample_wishart);
+  gsl_matrix_free(work);
+  gsl_vector_free(samples_wishart);
 }
 
 

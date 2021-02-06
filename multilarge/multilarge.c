@@ -110,8 +110,21 @@ gsl_multilarge_linear_lcurve(gsl_vector * reg_param, gsl_vector * rho,
                              gsl_vector * eta,
                              gsl_multilarge_linear_workspace * w)
 {
-  int status = w->type->lcurve(reg_param, rho, eta, w->state);
-  return status;
+  const size_t len = reg_param->size;
+
+  if (len != rho->size)
+    {
+      GSL_ERROR ("reg_param and rho have different sizes", GSL_EBADLEN);
+    }
+  else if (len != eta->size)
+    {
+      GSL_ERROR ("reg_param and eta have different sizes", GSL_EBADLEN);
+    }
+  else
+    {
+      int status = w->type->lcurve(reg_param, rho, eta, w->state);
+      return status;
+    }
 }
 
 /*
@@ -149,6 +162,8 @@ gsl_multilarge_linear_wstdform1 (const gsl_vector * L,
 {
   const size_t n = X->size1;
   const size_t p = X->size2;
+
+  (void) work;
 
   if (L != NULL && p != L->size)
     {
@@ -250,6 +265,8 @@ gsl_multilarge_linear_wstdform2 (const gsl_matrix * LQR,
   const size_t m = LQR->size1;
   const size_t n = X->size1;
   const size_t p = X->size2;
+
+  (void) Ltau;
 
   if (p != work->p)
     {
@@ -362,6 +379,9 @@ gsl_multilarge_linear_genform2 (const gsl_matrix * LQR,
 {
   const size_t m = LQR->size1;
   const size_t p = LQR->size2;
+
+  (void) Ltau;
+  (void) work;
 
   if (p != c->size)
     {

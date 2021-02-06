@@ -358,6 +358,23 @@ test_sf_sgn (gsl_sf_result r, double sgn, double val_in, double tol, double expe
   return local_s;
 }
 
+int
+test_sf_return (int status, int expect_return, const char * desc)
+{
+  char message_buff[4096];
+  int local_s = 0;
+
+  message_buff[0] = '\0';
+
+  local_s |= test_sf_check_return(message_buff, status, expect_return);
+
+  gsl_test(local_s, desc);
+  if(local_s != 0) {
+    printf("%s", message_buff);
+  }
+  return local_s;
+}
+
 int test_clausen(void)
 {
   gsl_sf_result r;
@@ -2748,6 +2765,7 @@ int main(int argc, char * argv[])
   gsl_test(test_fermidirac(),  "Fermi-Dirac Functions");
   gsl_test(test_gamma(),       "Gamma Functions");
   gsl_test(test_gegen(),       "Gegenbauer Polynomials");
+  gsl_test(test_hermite(),     "Hermite Functions");
   gsl_test(test_hyperg(),      "Hypergeometric Functions");
   gsl_test(test_laguerre(),    "Laguerre Polynomials");
   gsl_test(test_lambert(),     "Lambert W Functions");
@@ -2757,6 +2775,7 @@ int main(int argc, char * argv[])
   gsl_test(test_pow_int(),     "Integer Powers");
   gsl_test(test_psi(),         "Psi Functions");
   gsl_test(test_psi_complex(), "Psi Function for complex argument");
+  gsl_test(test_sincos_pi(),   "sin_pi and cos_pi");
   gsl_test(test_synch(),       "Synchrotron Functions");
   gsl_test(test_transport(),   "Transport Functions");
   gsl_test(test_trig(),        "Trigonometric and Related Functions");

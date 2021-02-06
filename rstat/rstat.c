@@ -59,7 +59,7 @@ gsl_rstat_free(gsl_rstat_workspace *w)
 } /* gsl_rstat_free() */
 
 size_t
-gsl_rstat_n(gsl_rstat_workspace *w)
+gsl_rstat_n(const gsl_rstat_workspace *w)
 {
   return w->n;
 } /* gsl_rstat_n() */
@@ -103,25 +103,25 @@ gsl_rstat_add(const double x, gsl_rstat_workspace *w)
 } /* gsl_rstat_add() */
 
 double
-gsl_rstat_min(gsl_rstat_workspace *w)
+gsl_rstat_min(const gsl_rstat_workspace *w)
 {
   return w->min;
 } /* gsl_rstat_min() */
 
 double
-gsl_rstat_max(gsl_rstat_workspace *w)
+gsl_rstat_max(const gsl_rstat_workspace *w)
 {
   return w->max;
 } /* gsl_rstat_max() */
 
 double
-gsl_rstat_mean(gsl_rstat_workspace *w)
+gsl_rstat_mean(const gsl_rstat_workspace *w)
 {
   return w->mean;
 } /* gsl_rstat_mean() */
 
 double
-gsl_rstat_variance(gsl_rstat_workspace *w)
+gsl_rstat_variance(const gsl_rstat_workspace *w)
 {
   if (w->n > 1)
     {
@@ -133,16 +133,33 @@ gsl_rstat_variance(gsl_rstat_workspace *w)
 } /* gsl_rstat_variance() */
 
 double
-gsl_rstat_sd(gsl_rstat_workspace *w)
+gsl_rstat_sd(const gsl_rstat_workspace *w)
 {
   double var = gsl_rstat_variance(w);
 
   return (sqrt(var));
 } /* gsl_rstat_sd() */
 
+double
+gsl_rstat_rms(const gsl_rstat_workspace *w)
+{
+  double rms = 0.0;
+
+  if (w->n > 0)
+    {
+      double mean = gsl_rstat_mean(w);
+      double sigma = gsl_rstat_sd(w);
+      double n = (double) w->n;
+      double a = sqrt((n - 1.0) / n);
+      rms = gsl_hypot(mean, a * sigma);
+    }
+
+  return rms;
+}
+
 /* standard deviation of the mean: sigma / sqrt(n) */
 double
-gsl_rstat_sd_mean(gsl_rstat_workspace *w)
+gsl_rstat_sd_mean(const gsl_rstat_workspace *w)
 {
   if (w->n > 0)
     {
@@ -160,7 +177,7 @@ gsl_rstat_median(gsl_rstat_workspace *w)
 }
 
 double
-gsl_rstat_skew(gsl_rstat_workspace *w)
+gsl_rstat_skew(const gsl_rstat_workspace *w)
 {
   if (w->n > 0)
     {
@@ -173,7 +190,7 @@ gsl_rstat_skew(gsl_rstat_workspace *w)
 } /* gsl_rstat_skew() */
 
 double
-gsl_rstat_kurtosis(gsl_rstat_workspace *w)
+gsl_rstat_kurtosis(const gsl_rstat_workspace *w)
 {
   if (w->n > 0)
     {
@@ -188,6 +205,8 @@ gsl_rstat_kurtosis(gsl_rstat_workspace *w)
 int
 gsl_rstat_reset(gsl_rstat_workspace *w)
 {
+  int status;
+
   w->min = 0.0;
   w->max = 0.0;
   w->mean = 0.0;
@@ -196,5 +215,7 @@ gsl_rstat_reset(gsl_rstat_workspace *w)
   w->M4 = 0.0;
   w->n = 0;
 
-  return GSL_SUCCESS;
+  status = gsl_rstat_quantile_reset(w->median_workspace_p);
+
+  return status;
 } /* gsl_rstat_reset() */

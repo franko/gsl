@@ -61,12 +61,13 @@ gsl_spblas_dgemv(const CBLAS_TRANSPOSE_t TransA, const double alpha,
     }
   else
     {
-      size_t j, p;
+      size_t j;
       size_t incX, incY;
       size_t lenX, lenY;
       double *X, *Y;
       double *Ad;
-      size_t *Ap, *Ai, *Aj;
+      int *Ap, *Ai, *Aj;
+      int p;
 
       if (TransA == CblasNoTrans)
         {
@@ -106,34 +107,35 @@ gsl_spblas_dgemv(const CBLAS_TRANSPOSE_t TransA, const double alpha,
       if (alpha == 0.0)
         return GSL_SUCCESS;
 
-      /* form y := alpha*A*x + y */
+      /* form y := alpha*op(A)*x + y */
       Ap = A->p;
       Ad = A->data;
       X = x->data;
       incX = x->stride;
 
-      if (GSL_SPMATRIX_ISCCS(A))
+      if ((GSL_SPMATRIX_ISCCS(A) && (TransA == CblasNoTrans)) ||
+          (GSL_SPMATRIX_ISCRS(A) && (TransA == CblasTrans)))
         {
           Ai = A->i;
 
-          if (TransA == CblasNoTrans)
+          for (j = 0; j < lenX; ++j)
             {
-              for (j = 0; j < lenX; ++j)
+              for (p = Ap[j]; p < Ap[j + 1]; ++p)
                 {
-                  for (p = Ap[j]; p < Ap[j + 1]; ++p)
-                    {
-                      Y[Ai[p] * incY] += alpha * Ad[p] * X[j * incX];
-                    }
+                  Y[Ai[p] * incY] += alpha * Ad[p] * X[j * incX];
                 }
             }
-          else
+        }
+      else if ((GSL_SPMATRIX_ISCCS(A) && (TransA == CblasTrans)) ||
+               (GSL_SPMATRIX_ISCRS(A) && (TransA == CblasNoTrans)))
+        {
+          Ai = A->i;
+
+          for (j = 0; j < lenY; ++j)
             {
-              for (j = 0; j < lenY; ++j)
+              for (p = Ap[j]; p < Ap[j + 1]; ++p)
                 {
-                  for (p = Ap[j]; p < Ap[j + 1]; ++p)
-                    {
-                      Y[j * incY] += alpha * Ad[p] * X[Ai[p] * incX];
-                    }
+                  Y[j * incY] += alpha * Ad[p] * X[Ai[p] * incX];
                 }
             }
         }
@@ -150,7 +152,7 @@ gsl_spblas_dgemv(const CBLAS_TRANSPOSE_t TransA, const double alpha,
               Aj = A->i;
             }
 
-          for (p = 0; p < A->nz; ++p)
+          for (p = 0; p < (int) A->nz; ++p)
             {
               Y[Ai[p] * incY] += alpha * Ad[p] * X[Aj[p] * incX];
             }

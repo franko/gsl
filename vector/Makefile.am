@@ -8,13 +8,13 @@ AM_CPPFLAGS = -I$(top_srcdir)
 
 TESTS = $(check_PROGRAMS)
 
-test_LDADD = libgslvector.la ../block/libgslblock.la ../ieee-utils/libgslieeeutils.la ../err/libgslerr.la ../test/libgsltest.la ../sys/libgslsys.la ../utils/libutils.la
-test_static_LDADD = libgslvector.la ../block/libgslblock.la ../ieee-utils/libgslieeeutils.la ../err/libgslerr.la ../test/libgsltest.la ../sys/libgslsys.la ../utils/libutils.la
+test_LDADD = libgslvector.la ../blas/libgslblas.la ../cblas/libgslcblas.la ../block/libgslblock.la ../ieee-utils/libgslieeeutils.la ../err/libgslerr.la ../test/libgsltest.la ../sys/libgslsys.la ../utils/libutils.la
+test_static_LDADD = libgslvector.la ../blas/libgslblas.la ../cblas/libgslcblas.la ../block/libgslblock.la ../ieee-utils/libgslieeeutils.la ../err/libgslerr.la ../test/libgsltest.la ../sys/libgslsys.la ../utils/libutils.la
 
 test_SOURCES = test.c
 test_static_SOURCES = test_static.c
 
-CLEANFILES = test.txt test.dat
+CLEANFILES = test.txt test.dat test_static.dat
 
 noinst_HEADERS = init_source.c file_source.c copy_source.c swap_source.c prop_source.c test_complex_source.c test_source.c minmax_source.c oper_source.c oper_complex_source.c reim_source.c subvector_source.c view_source.c
 
