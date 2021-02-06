@@ -212,7 +212,7 @@ foreach module : gsl_modules
     )
 endforeach
 
-cblas_libname = get_option('cblas')
+cblas_libname = get_option('blas')
 if cblas_libname == 'internal'
     dir_sources = []
     foreach filename : cblas_sources

@@ -1,2 +1,2 @@
-option('cblas', type : 'string', value : 'internal', description: 'cblas library')
+option('blas', type : 'string', value : 'internal', description: 'cblas library')
 
