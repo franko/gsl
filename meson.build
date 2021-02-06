@@ -108,7 +108,7 @@ endif
 
 check_math_functions = ['acosh', 'asinh', 'atanh', 'hypot', 'ldexp', 'frexp', 'expm1', 'isinf', 'isfinite', 'finite', 'isnan', 'log1p']
 foreach function_name : check_math_functions
-    if cc.has_function(function_name, prefix : '#include <math.h>')
+    if cc.has_function(function_name, prefix : '#include <math.h>', dependencies : libm)
         conf.set('HAVE_DECL_' + function_name.to_upper(), 1)
     endif
 endforeach
@@ -122,7 +122,7 @@ endforeach
 
 check_fenv_functions = ['feenableexcept', 'fesettrapenable']
 foreach function_name : check_fenv_functions
-    if cc.has_function(function_name, prefix : '#define _GNU_SOURCE 1\n#include <fenv.h>')
+    if cc.has_function(function_name, prefix : '#define _GNU_SOURCE 1\n#include <fenv.h>', dependencies : libm)
         conf.set('HAVE_DECL_' + function_name.to_upper(), 1)
     endif
 endforeach
