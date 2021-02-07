@@ -27,10 +27,10 @@ The standard configure script, when used on Windows, hard code the
 name of the BLAS DLL library to gslcblas and prevent therefore the usage
 of an alternative BLAS library.
 
-Second reason was to increase the compilation time, especially on Windows
+Second reason was to improve the build time, especially on Windows
 when using MinGW.
 When using Meson the build time is greatly improved and gslcblas is not compiled
-altogether is it is not required reducing further the build time.
+altogether if it is not required reducing further the build time.
 
 ## How to use it?
 
