@@ -225,7 +225,8 @@ if cblas_libname == 'internal'
         dir_sources,
         include_directories: [gsl_include_dir, module_include_dir],
         c_args : gsl_defines,
-        dependencies: libm
+        dependencies: libm,
+        install: true
     )
     cblas_dep = declare_dependency(link_with : cblas_lib)
 else
