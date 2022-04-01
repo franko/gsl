@@ -251,3 +251,8 @@ pkg.generate(libgsl,
     description : 'GNU Scientific Library',
 )
 
+libgsl_dep = declare_dependency(
+    dependencies : libm,
+    include_directories : gsl_include_dir,
+    link_with : libgsl,
+)
