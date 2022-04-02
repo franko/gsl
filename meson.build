@@ -146,27 +146,16 @@ configure_file(input: 'config-meson.h.in', output: 'config.h', configuration: co
 gsl_include_dir = include_directories('include')
 
 gsl_modules = [
-    {'name': 'splinalg', 'dir': 'splinalg', 'sources': ['itersolve.c', 'gmres.c']},
-    {'name': 'spmatrix', 'dir': 'spmatrix', 'sources': ['spcompress.c', 'spcopy.c', 'spgetset.c', 'spmatrix.c', 'spoper.c', 'spprop.c', 'spswap.c']},
-    {'name': 'spblas', 'dir': 'spblas', 'sources': ['spdgemm.c', 'spdgemv.c']},
     {'name': 'bspline', 'dir': 'bspline', 'sources': ['bspline.c', 'greville.c']},
-    {'name': 'wavelet', 'dir': 'wavelet', 'sources': ['dwt.c', 'wavelet.c', 'bspline.c', 'daubechies.c', 'haar.c']},
     {'name': 'cdf', 'dir': 'cdf', 'sources': ['beta.c', 'betainv.c', 'cauchy.c', 'cauchyinv.c', 'chisq.c', 'chisqinv.c', 'exponential.c', 'exponentialinv.c', 'exppow.c', 'fdist.c', 'fdistinv.c', 'flat.c', 'flatinv.c', 'gamma.c', 'gammainv.c', 'gauss.c', 'gaussinv.c', 'gumbel1.c', 'gumbel1inv.c', 'gumbel2.c', 'gumbel2inv.c', 'laplace.c', 'laplaceinv.c', 'logistic.c', 'logisticinv.c', 'lognormal.c', 'lognormalinv.c', 'pareto.c', 'paretoinv.c', 'rayleigh.c', 'rayleighinv.c', 'tdist.c', 'tdistinv.c', 'weibull.c', 'weibullinv.c', 'binomial.c', 'poisson.c', 'geometric.c', 'nbinomial.c', 'pascal.c', 'hypergeometric.c']},
     {'name': 'deriv', 'dir': 'deriv', 'sources': ['deriv.c']},
     {'name': 'diff', 'dir': 'diff', 'sources': ['diff.c']},
     {'name': 'ntuple', 'dir': 'ntuple', 'sources': ['ntuple.c']},
-    {'name': 'monte', 'dir': 'monte', 'sources': ['miser.c', 'plain.c', 'vegas.c']},
-    {'name': 'multimin', 'dir': 'multimin', 'sources': ['fdfminimizer.c', 'steepest_descent.c', 'conjugate_fr.c', 'conjugate_pr.c', 'convergence.c', 'diff.c', 'vector_bfgs.c', 'vector_bfgs2.c', 'fminimizer.c', 'simplex.c', 'simplex2.c']},
-    {'name': 'min', 'dir': 'min', 'sources': ['fsolver.c', 'golden.c', 'brent.c', 'convergence.c', 'bracketing.c', 'quad_golden.c']},
     {'name': 'multiroots', 'dir': 'multiroots', 'sources': ['fdjac.c', 'fsolver.c', 'fdfsolver.c', 'convergence.c', 'newton.c', 'gnewton.c', 'dnewton.c', 'broyden.c', 'hybrid.c', 'hybridj.c']},
     {'name': 'roots', 'dir': 'roots', 'sources': ['bisection.c', 'brent.c', 'falsepos.c', 'newton.c', 'secant.c', 'steffenson.c', 'convergence.c', 'fsolver.c', 'fdfsolver.c']},
-    {'name': 'odeiv2', 'dir': 'ode-initval2', 'sources': ['control.c', 'cstd.c', 'cscal.c', 'evolve.c', 'step.c', 'rk2.c', 'rk2imp.c', 'rk4.c', 'rk4imp.c', 'rkf45.c', 'rk8pd.c', 'rkck.c', 'bsimp.c', 'rk1imp.c', 'msadams.c', 'msbdf.c', 'driver.c']},
-    {'name': 'odeiv', 'dir': 'ode-initval', 'sources': ['control.c', 'cstd.c', 'cscal.c', 'evolve.c', 'step.c', 'rk2.c', 'rk2imp.c', 'rk2simp.c', 'rk4.c', 'rk4imp.c', 'rkf45.c', 'rk8pd.c', 'rkck.c', 'bsimp.c', 'gear1.c', 'gear2.c']},
     {'name': 'histogram', 'dir': 'histogram', 'sources': ['add.c', 'get.c', 'init.c', 'params.c', 'reset.c', 'file.c', 'pdf.c', 'add2d.c', 'get2d.c', 'init2d.c', 'params2d.c', 'reset2d.c', 'file2d.c', 'pdf2d.c', 'calloc_range.c', 'calloc_range2d.c', 'copy.c', 'copy2d.c', 'maxval.c', 'maxval2d.c', 'oper.c', 'oper2d.c', 'stat.c', 'stat2d.c']},
     {'name': 'interpolation', 'dir': 'interpolation', 'sources': ['accel.c', 'akima.c', 'cspline.c', 'interp.c', 'linear.c', 'spline.c', 'poly.c', 'steffen.c', 'inline.c', 'interp2d.c', 'bilinear.c', 'bicubic.c', 'spline2d.c']},
-    {'name': 'integration', 'dir': 'integration', 'sources': ['qk15.c', 'qk21.c', 'qk31.c', 'qk41.c', 'qk51.c', 'qk61.c', 'qk.c', 'qng.c', 'qag.c', 'qags.c', 'qagp.c', 'workspace.c', 'qcheb.c', 'qawc.c', 'qmomo.c', 'qaws.c', 'qmomof.c', 'qawo.c', 'qawf.c', 'glfixed.c', 'cquad.c']},
     {'name': 'sum', 'dir': 'sum', 'sources': ['levin_u.c', 'levin_utrunc.c', 'work_u.c', 'work_utrunc.c']},
-    {'name': 'siman', 'dir': 'siman', 'sources': ['siman.c']},
     {'name': 'statistics', 'dir': 'statistics', 'sources': ['mean.c', 'variance.c', 'absdev.c', 'skew.c', 'kurtosis.c', 'lag1.c', 'p_variance.c', 'minmax.c', 'ttest.c', 'median.c', 'covariance.c', 'quantiles.c', 'wmean.c', 'wvariance.c', 'wabsdev.c', 'wskew.c', 'wkurtosis.c']},
     {'name': 'rstat', 'dir': 'rstat', 'sources': ['rstat.c', 'rquantile.c']},
     {'name': 'multilarge', 'dir': 'multilarge', 'sources': ['multilarge.c', 'normal.c', 'tsqr.c']},
@@ -196,6 +185,44 @@ gsl_modules = [
     {'name': 'resulttest', 'dir': 'test', 'sources': ['results.c']},
     {'name': 'sys', 'dir': 'sys', 'sources': ['minmax.c', 'prec.c', 'hypot.c', 'log1p.c', 'expm1.c', 'coerce.c', 'invhyp.c', 'pow_int.c', 'infnan.c', 'fdiv.c', 'fcmp.c', 'ldfrexp.c']},
 ]
+
+if get_option('sparse')
+    gsl_modules += [
+        {'name': 'splinalg', 'dir': 'splinalg', 'sources': ['itersolve.c', 'gmres.c']},
+        {'name': 'spmatrix', 'dir': 'spmatrix', 'sources': ['spcompress.c', 'spcopy.c', 'spgetset.c', 'spmatrix.c', 'spoper.c', 'spprop.c', 'spswap.c']},
+        {'name': 'spblas', 'dir': 'spblas', 'sources': ['spdgemm.c', 'spdgemv.c']},
+    ]
+endif
+
+if get_option('wavelet')
+    gsl_modules += {'name': 'wavelet', 'dir': 'wavelet', 'sources': ['dwt.c', 'wavelet.c', 'bspline.c', 'daubechies.c', 'haar.c']}
+endif
+
+if get_option('monte')
+    gsl_modules += {'name': 'monte', 'dir': 'monte', 'sources': ['miser.c', 'plain.c', 'vegas.c']}
+endif
+
+if get_option('ode')
+    gsl_modules += [
+        {'name': 'odeiv2', 'dir': 'ode-initval2', 'sources': ['control.c', 'cstd.c', 'cscal.c', 'evolve.c', 'step.c', 'rk2.c', 'rk2imp.c', 'rk4.c', 'rk4imp.c', 'rkf45.c', 'rk8pd.c', 'rkck.c', 'bsimp.c', 'rk1imp.c', 'msadams.c', 'msbdf.c', 'driver.c']},
+        {'name': 'odeiv', 'dir': 'ode-initval', 'sources': ['control.c', 'cstd.c', 'cscal.c', 'evolve.c', 'step.c', 'rk2.c', 'rk2imp.c', 'rk2simp.c', 'rk4.c', 'rk4imp.c', 'rkf45.c', 'rk8pd.c', 'rkck.c', 'bsimp.c', 'gear1.c', 'gear2.c']},
+    ]
+endif
+
+if get_option('siman')
+    gsl_modules += {'name': 'siman', 'dir': 'siman', 'sources': ['siman.c']}
+endif
+
+if get_option('integ')
+    gsl_modules += {'name': 'integration', 'dir': 'integration', 'sources': ['qk15.c', 'qk21.c', 'qk31.c', 'qk41.c', 'qk51.c', 'qk61.c', 'qk.c', 'qng.c', 'qag.c', 'qags.c', 'qagp.c', 'workspace.c', 'qcheb.c', 'qawc.c', 'qmomo.c', 'qaws.c', 'qmomof.c', 'qawo.c', 'qawf.c', 'glfixed.c', 'cquad.c']}
+endif
+
+if get_option('min')
+    gsl_modules += [
+        {'name': 'multimin', 'dir': 'multimin', 'sources': ['fdfminimizer.c', 'steepest_descent.c', 'conjugate_fr.c', 'conjugate_pr.c', 'convergence.c', 'diff.c', 'vector_bfgs.c', 'vector_bfgs2.c', 'fminimizer.c', 'simplex.c', 'simplex2.c']},
+        {'name': 'min', 'dir': 'min', 'sources': ['fsolver.c', 'golden.c', 'brent.c', 'convergence.c', 'bracketing.c', 'quad_golden.c']},
+    ]
+endif
 
 cblas_sources = ['sasum.c', 'saxpy.c', 'scasum.c', 'scnrm2.c', 'scopy.c', 'sdot.c', 'sdsdot.c', 'sgbmv.c', 'sgemm.c', 'sgemv.c', 'sger.c', 'snrm2.c', 'srot.c', 'srotg.c', 'srotm.c', 'srotmg.c', 'ssbmv.c', 'sscal.c', 'sspmv.c', 'sspr.c', 'sspr2.c', 'sswap.c', 'ssymm.c', 'ssymv.c', 'ssyr.c', 'ssyr2.c', 'ssyr2k.c', 'ssyrk.c', 'stbmv.c', 'stbsv.c', 'stpmv.c', 'stpsv.c', 'strmm.c', 'strmv.c', 'strsm.c', 'strsv.c', 'dasum.c', 'daxpy.c', 'dcopy.c', 'ddot.c', 'dgbmv.c', 'dgemm.c', 'dgemv.c', 'dger.c', 'dnrm2.c', 'drot.c', 'drotg.c', 'drotm.c', 'drotmg.c', 'dsbmv.c', 'dscal.c', 'dsdot.c', 'dspmv.c', 'dspr.c', 'dspr2.c', 'dswap.c', 'dsymm.c', 'dsymv.c', 'dsyr.c', 'dsyr2.c', 'dsyr2k.c', 'dsyrk.c', 'dtbmv.c', 'dtbsv.c', 'dtpmv.c', 'dtpsv.c', 'dtrmm.c', 'dtrmv.c', 'dtrsm.c', 'dtrsv.c', 'dzasum.c', 'dznrm2.c', 'caxpy.c', 'ccopy.c', 'cdotc_sub.c', 'cdotu_sub.c', 'cgbmv.c', 'cgemm.c', 'cgemv.c', 'cgerc.c', 'cgeru.c', 'chbmv.c', 'chemm.c', 'chemv.c', 'cher.c', 'cher2.c', 'cher2k.c', 'cherk.c', 'chpmv.c', 'chpr.c', 'chpr2.c', 'cscal.c', 'csscal.c', 'cswap.c', 'csymm.c', 'csyr2k.c', 'csyrk.c', 'ctbmv.c', 'ctbsv.c', 'ctpmv.c', 'ctpsv.c', 'ctrmm.c', 'ctrmv.c', 'ctrsm.c', 'ctrsv.c', 'zaxpy.c', 'zcopy.c', 'zdotc_sub.c', 'zdotu_sub.c', 'zdscal.c', 'zgbmv.c', 'zgemm.c', 'zgemv.c', 'zgerc.c', 'zgeru.c', 'zhbmv.c', 'zhemm.c', 'zhemv.c', 'zher.c', 'zher2.c', 'zher2k.c', 'zherk.c', 'zhpmv.c', 'zhpr.c', 'zhpr2.c', 'zscal.c', 'zswap.c', 'zsymm.c', 'zsyr2k.c', 'zsyrk.c', 'ztbmv.c', 'ztbsv.c', 'ztpmv.c', 'ztpsv.c', 'ztrmm.c', 'ztrmv.c', 'ztrsm.c', 'ztrsv.c', 'icamax.c', 'idamax.c', 'isamax.c', 'izamax.c', 'xerbla.c']
 

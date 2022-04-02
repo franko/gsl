@@ -1,2 +1,9 @@
-option('blas', type : 'string', value : 'internal', description: 'cblas library')
+option('blas',    type : 'string', value : 'internal', description: 'cblas library')
+option('sparse',  type : 'boolean', value : true, description: 'Sparse matrix module')
+option('monte',   type : 'boolean', value : true, description: 'Montecarlo module')
+option('wavelet', type : 'boolean', value : true, description: 'Wavelet module')
+option('ode',     type : 'boolean', value : true, description: 'ODE module')
+option('siman',   type : 'boolean', value : true, description: 'Simulated anneal module')
+option('integ',   type : 'boolean', value : true, description: 'Numeric integration module')
+option('min',     type : 'boolean', value : true, description: 'Minimization module')
 
