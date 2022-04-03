@@ -6,4 +6,6 @@ option('ode',     type : 'boolean', value : true, description: 'ODE module')
 option('siman',   type : 'boolean', value : true, description: 'Simulated anneal module')
 option('integ',   type : 'boolean', value : true, description: 'Numeric integration module')
 option('min',     type : 'boolean', value : true, description: 'Minimization module')
+option('fit',     type : 'boolean', value : true, description: 'Linear fit module')
+option('multifit',type : 'boolean', value : true, description: 'Non-linear least-squares fit module')
 

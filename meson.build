@@ -158,9 +158,6 @@ gsl_modules = [
     {'name': 'sum', 'dir': 'sum', 'sources': ['levin_u.c', 'levin_utrunc.c', 'work_u.c', 'work_utrunc.c']},
     {'name': 'statistics', 'dir': 'statistics', 'sources': ['mean.c', 'variance.c', 'absdev.c', 'skew.c', 'kurtosis.c', 'lag1.c', 'p_variance.c', 'minmax.c', 'ttest.c', 'median.c', 'covariance.c', 'quantiles.c', 'wmean.c', 'wvariance.c', 'wabsdev.c', 'wskew.c', 'wkurtosis.c']},
     {'name': 'rstat', 'dir': 'rstat', 'sources': ['rstat.c', 'rquantile.c']},
-    {'name': 'multilarge', 'dir': 'multilarge', 'sources': ['multilarge.c', 'normal.c', 'tsqr.c']},
-    {'name': 'multifit', 'dir': 'multifit', 'sources': ['multilinear.c', 'multiwlinear.c', 'work.c', 'lmniel.c', 'lmder.c', 'fsolver.c', 'fdfsolver.c', 'fdfridge.c', 'fdjac.c', 'convergence.c', 'gradient.c', 'covar.c', 'multirobust.c', 'robust_wfun.c', 'multireg.c']},
-    {'name': 'fit', 'dir': 'fit', 'sources': ['linear.c']},
     {'name': 'poly', 'dir': 'poly', 'sources': ['dd.c', 'eval.c', 'solve_quadratic.c', 'solve_cubic.c', 'zsolve_quadratic.c', 'zsolve_cubic.c', 'zsolve.c', 'zsolve_init.c', 'deriv.c']},
     {'name': 'fft', 'dir': 'fft', 'sources': ['dft.c', 'fft.c']},
     {'name': 'randist', 'dir': 'randist', 'sources': ['bernoulli.c', 'beta.c', 'bigauss.c', 'binomial.c', 'cauchy.c', 'chisq.c', 'dirichlet.c', 'discrete.c', 'erlang.c', 'exponential.c', 'exppow.c', 'fdist.c', 'flat.c', 'gamma.c', 'gauss.c', 'gausszig.c', 'gausstail.c', 'geometric.c', 'gumbel.c', 'hyperg.c', 'laplace.c', 'levy.c', 'logarithmic.c', 'logistic.c', 'lognormal.c', 'multinomial.c', 'nbinomial.c', 'pareto.c', 'pascal.c', 'poisson.c', 'rayleigh.c', 'shuffle.c', 'sphere.c', 'tdist.c', 'weibull.c', 'landau.c', 'binomial_tpe.c']},
@@ -221,6 +218,17 @@ if get_option('min')
     gsl_modules += [
         {'name': 'multimin', 'dir': 'multimin', 'sources': ['fdfminimizer.c', 'steepest_descent.c', 'conjugate_fr.c', 'conjugate_pr.c', 'convergence.c', 'diff.c', 'vector_bfgs.c', 'vector_bfgs2.c', 'fminimizer.c', 'simplex.c', 'simplex2.c']},
         {'name': 'min', 'dir': 'min', 'sources': ['fsolver.c', 'golden.c', 'brent.c', 'convergence.c', 'bracketing.c', 'quad_golden.c']},
+    ]
+endif
+
+if get_option('fit')
+    gsl_modules += {'name': 'fit', 'dir': 'fit', 'sources': ['linear.c']}
+endif
+
+if get_option('multifit')
+    gsl_modules += [
+        {'name': 'multifit', 'dir': 'multifit', 'sources': ['multilinear.c', 'multiwlinear.c', 'work.c', 'lmniel.c', 'lmder.c', 'fsolver.c', 'fdfsolver.c', 'fdfridge.c', 'fdjac.c', 'convergence.c', 'gradient.c', 'covar.c', 'multirobust.c', 'robust_wfun.c', 'multireg.c']},
+        {'name': 'multilarge', 'dir': 'multilarge', 'sources': ['multilarge.c', 'normal.c', 'tsqr.c']},
     ]
 endif
 
